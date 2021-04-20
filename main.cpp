@@ -261,7 +261,7 @@ int main() {
 		q1.pop();
 	}
 	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-	std::cout << "The time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " us\n";
+	std::cout << "STL queue time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " us\n";
 
 	Queue<float> q2;
 
@@ -276,7 +276,7 @@ int main() {
 		q2.pop();
 	}
 	end = std::chrono::high_resolution_clock::now();
-	std::cout << "The time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " us\n";
+	std::cout << "circular-buffer-Queue queue time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " us\n";
 
 	return 0;
 }

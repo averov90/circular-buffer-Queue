@@ -1,4 +1,5 @@
-﻿#include <iostream>
+﻿#include <cstring>
+#include <iostream>
 #include <stdexcept>
 #include <queue>
 #include <chrono>
@@ -249,7 +250,7 @@ public:
 
 int main() {
 	std::queue<float> q1;
-	auto begin = std::chrono::high_resolution_clock::now();
+	std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
 	for (size_t i = 0; i < 6; ++i) {
 		q1.push(abs(rand()) / 1000.0F);
 	}
@@ -259,9 +260,8 @@ int main() {
 		q1.pop();
 		q1.pop();
 	}
-	auto end = std::chrono::steady_clock::now();
-	auto elapsed_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-	std::cout << "The time: " << elapsed_ms.count() << " us\n";
+	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+	std::cout << "The time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " us\n";
 
 	Queue<float> q2;
 
@@ -275,9 +275,8 @@ int main() {
 		q2.pop();
 		q2.pop();
 	}
-	end = std::chrono::steady_clock::now();
-	elapsed_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-	std::cout << "The time: " << elapsed_ms.count() << " us\n";
+	end = std::chrono::high_resolution_clock::now();
+	std::cout << "The time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " us\n";
 
 	return 0;
 }

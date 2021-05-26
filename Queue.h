@@ -50,7 +50,8 @@ public:
 				items = new_pointer;
 
 				if (epic_offset) {
-					memcpy(pick = new_pointer + capacity_new - capacitance + epic_offset, new_pointer + epic_offset, (capacitance - epic_offset) * sizeof(T));
+					pick = new_pointer + capacity_new - capacitance + epic_offset;
+					memcpy(pick, new_pointer + epic_offset, (capacitance - epic_offset) * sizeof(T));
 					place = new_pointer + epic_offset;
 				} else {
 					place = new_pointer + capacitance;
@@ -73,44 +74,31 @@ public:
 	}
 
 	void capacity(unsigned int new_capacity) {
+		if (!new_capacity) throw std::out_of_range("Capacity must be at least 1!");
 		if (stored_count > new_capacity) throw std::out_of_range("The capacity of the structure cannot be less than the number of elements in it!");
-		if (new_capacity > capacitance) {
-			T *new_pointer = reinterpret_cast<T *>(realloc(items, new_capacity * sizeof(T)));
-			if (!new_pointer) throw std::runtime_error("You don't have enough memory!");
 
-			unsigned int epic_offset = place - items;
-			items = new_pointer;
+		T *new_pointer = reinterpret_cast<T *>(malloc(new_capacity * sizeof(T)));
+		if (!new_pointer) throw std::runtime_error("You don't have enough memory!");
 
-			if (epic_offset) {
-				memcpy(pick = new_pointer + new_capacity - capacitance + epic_offset, new_pointer + epic_offset, (capacitance - epic_offset) * sizeof(T));
-				place = new_pointer + epic_offset;
-			} else {
-				place = new_pointer + capacitance;
-				pick = new_pointer;
-			}
-			capacitance = new_capacity;
-			itemse = items + capacitance;
-		} else {
-			T *new_pointer = reinterpret_cast<T *>(malloc(new_capacity * sizeof(T)));
-			if (!new_pointer) throw std::runtime_error("You don't have enough memory!");
-
-			if (place > pick) {
+		if (stored_count) {
+			if (place > pick || place == items) {
 				memcpy(new_pointer, pick, stored_count * sizeof(T));
 			} else {
 				memcpy(new_pointer, pick, (itemse - pick) * sizeof(T));
 				memcpy(new_pointer + (itemse - pick), items, (place - items) * sizeof(T));
 			}
-			pick = new_pointer;
-			if (new_capacity == stored_count)
-				place = new_pointer;
-			else
-				place = new_pointer + stored_count;
-
-			capacitance = new_capacity;
-
-			free(items); items = new_pointer;
-			itemse = items + capacitance;
 		}
+
+		pick = new_pointer;
+		if (new_capacity == stored_count)
+			place = new_pointer;
+		else
+			place = new_pointer + stored_count;
+
+		capacitance = new_capacity;
+
+		free(items); items = new_pointer;
+		itemse = items + new_capacity;
 	}
 
 	void push(T item) {
@@ -177,10 +165,15 @@ public:
 
 				if (++pk == itemse) pk = items;
 			} while (pk != em);
-			memcpy(items, tbuff, (stored_count = (cpos - tbuff)) * sizeof(T));
-			pick = items; place = cpos;
 
-			free(tbuff);
+			pick = tbuff;
+			if (stored_count == capacitance) 
+				place = tbuff;
+			else
+				place = tbuff + stored_count;
+			
+			free(items); items = tbuff;
+			itemse = tbuff + capacitance;
 		}
 	}
 

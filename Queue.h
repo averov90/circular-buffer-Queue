@@ -167,12 +167,15 @@ public:
 			} while (pk != em);
 
 			pick = tbuff;
-			if (stored_count == capacitance) 
+
+			stored_count = cpos - tbuff;
+			if (stored_count == capacitance)
 				place = tbuff;
 			else
 				place = tbuff + stored_count;
 			
-			free(items); items = tbuff;
+			free(items); 
+			items = tbuff;
 			itemse = tbuff + capacitance;
 		}
 	}

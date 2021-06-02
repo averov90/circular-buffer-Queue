@@ -48,18 +48,19 @@ public:
 	}
 
 	CircularBuffer &operator=(const CircularBuffer &arg) {
-		capacitance = arg.capacitance;
-		stored_count = arg.stored_count;
+		if (this != &arg) {
+			capacitance = arg.capacitance;
+			stored_count = arg.stored_count;
+
+			items = std::unique_ptr<T[]>(new T[capacitance]);
+			itemse = items.get() + capacitance;
+
+			place = items.get() + (arg.place - arg.items.get());
+			pick = items.get() + (arg.pick - arg.items.get());
+
+			memcpy(items.get(), arg.items.get(), capacitance * sizeof(T));
+		}
 		
-		items = reinterpret_cast<T *>(malloc(capacitance * sizeof(T)));
-		if (!items) throw std::runtime_error("You don't have enough memory!");
-		itemse = items + capacitance;
-
-		place = items + (arg.place - arg.items);
-		pick = items + (arg.pick - arg.items);
-
-		memcpy(items, arg.items, capacitance * sizeof(T));
-
 		return *this;
 	}
 

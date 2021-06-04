@@ -118,12 +118,14 @@ public:
 
 	T pop() {
 		if (stored_count) {
-			T *item = pick;
+			T item = *pick;
+			pick->~T();
+			
 			--stored_count;
 			if (++pick == itemse) {
 				pick = items;
 			}
-			return *item;
+			return item;
 		} else
 			throw std::underflow_error("Nothing to Pop!");
 	}
@@ -159,9 +161,10 @@ public:
 			T *pk = pick, *em = place;
 			do {
 				if (*pk < min || *pk > max) {
-					*cpos = *pk;
+					memcpy(cpos, pk, sizeof(T));
 					++cpos;
-				}
+				} else
+					pk->~T();
 
 				if (++pk == itemse) pk = items;
 			} while (pk != em);
@@ -174,7 +177,7 @@ public:
 			else
 				place = tbuff + stored_count;
 			
-			free(items); 
+			free(items);
 			items = tbuff;
 			itemse = tbuff + capacitance;
 		}

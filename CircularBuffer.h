@@ -32,7 +32,7 @@ public:
 		{
 			const T *citem = list.begin();
 			for (T *cwpos = items; cwpos != itemse; ++cwpos, ++citem)
-				*cwpos = *citem;
+				memcpy(cwpos, citem, sizeof(T));
 		}
 	}
 
@@ -71,6 +71,7 @@ public:
 	void emplace(const T &item) {
 		if (place == pick) { // Common case
 			if (stored_count) { //Ring is full, rewriting
+				place->~T();
 				new (place) T(item); //Assigning an item to a memory address.
 				if (++pick == itemse) {
 					pick = items;
@@ -118,9 +119,10 @@ public:
 			if (--back < items) {
 				back = itemse - 1;
 			}
-			*front = *back;
+			memcpy(front, back, sizeof(T));
 		}
 		
+		back->~T();
 		//Emplacing
 		new (back) T(item);
 	}
@@ -143,13 +145,14 @@ public:
 			place = itemse - 1;
 		}
 
+		front->~T();
 		//Shifting items
 		while (front != place) 	{
 			back = front;
 			if (++front == itemse) {
 				front = items;
 			}
-			*back = *front;
+			memcpy(back, front, sizeof(T));
 		}
 	}
 
@@ -197,12 +200,14 @@ public:
 
 	T pop() {
 		if (stored_count) {
-			T *item = pick;
+			T item = *pick;
+			pick->~T();
+			
 			--stored_count;
 			if (++pick == itemse) {
 				pick = items;
 			}
-			return *item;
+			return item;
 		} else
 			throw std::underflow_error("Nothing to Pop!");
 	}

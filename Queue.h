@@ -204,22 +204,25 @@ public:
 
 	bool operator>(const Queue &arg) const {
 		if (stored_count) {
-			T *pk = pick, *em = place;
-			T *pk2 = arg.pick, *em2 = arg.place;
+			if (arg.stored_count) {
+				T *pk = pick, *em = place;
+				T *pk2 = arg.pick, *em2 = arg.place;
 
-			while (true) {
-				if (*pk > *pk2)
-					return true;
-				else if (*pk < *pk2)
-					return false;
+				while (true) {
+					if (*pk > *pk2)
+						return true;
+					else if (*pk < *pk2)
+						return false;
 
-				if (++pk == itemse)
-					pk = items;
-				if (pk == em) return false;
-				if (++pk2 == arg.itemse)
-					pk2 = arg.items;
-				if (pk2 == em2) return true;
-			}
+					if (++pk == itemse)
+						pk = items;
+					if (pk == em) return false;
+					if (++pk2 == arg.itemse)
+						pk2 = arg.items;
+					if (pk2 == em2) return true;
+				}
+			} else
+				return true;
 		}
 
 		return false;
